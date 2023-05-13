@@ -34,15 +34,18 @@ class DeliveryTest {
         var daysToAddForSecondMeeting = 7;
         var secondMeetingDate = DataGenerator.generateDate(daysToAddForSecondMeeting);
         // TODO: добавить логику теста в рамках которого будет выполнено планирование и перепланирование встречи.
-        $("[data-test-id=city] input").setValue(generateCity("ru"));
+        $("[data-test-id=city] input").setValue(validUser.getCity());
+        $("[data-test-id =date] input").sendKeys(Keys.CONTROL + "a");
+        $("[data-test-id =date] input").sendKeys(Keys.BACK_SPACE);
         $("[data-test-id=date] input").setValue(firstMeetingDate);
-        $("[data-test-id=name] input").setValue(generateName("ru"));
-        $("[data-test-id=phone] input").setValue(generatePhone("ru"));
+        $("[data-test-id=name] input").setValue(validUser.getName());
+        $("[data-test-id=phone] input").setValue(validUser.getPhone());
         $("[data-test-id=agreement]").click();
         $(withText("Запланировать")).click();
         $(withText("Успешно!")).shouldBe(Condition.visible, Duration.ofSeconds(10));
-        $("[data-test-id=success-notification]").shouldBe(visible);
-
+        $("[data-test-id=success-notification]")
+                .shouldHave(Condition.text("Встреча успешно запланирована на " + firstMeetingDate));
+        //$("[data-test-id=success-notification]").shouldBe(visible);
         $("[data-test-id =date] input").sendKeys(Keys.CONTROL + "a");
         $("[data-test-id =date] input").sendKeys(Keys.BACK_SPACE);
         $("[data-test-id=date] input").setValue(secondMeetingDate);
@@ -50,15 +53,11 @@ class DeliveryTest {
         $("[data-test-id=replan-notification]")
                 .shouldHave(Condition.text("У вас уже запланирована встреча на другую дату. Перепланировать?"));
         $(withText("Перепланировать")).click();
+        $("[data-test-id=success-notification]").shouldBe(Condition.visible, Duration.ofSeconds(10));
         $("[data-test-id=success-notification]").shouldHave(Condition.text("Встреча успешно запланирована на " + secondMeetingDate), Duration.ofSeconds(15))
                 .shouldBe(Condition.visible);
 
     }
 
-
-    // Для заполнения полей формы можно использовать пользователя validUser и строки с датами в переменных
-    // firstMeetingDate и secondMeetingDate. Можно также вызывать методы generateCity(locale),
-    // generateName(locale), generatePhone(locale) для генерации и получения в тесте соответственно города,
-    // имени и номера телефона без создания пользователя в методе generateUser(String locale) в датагенераторе
 }
 
